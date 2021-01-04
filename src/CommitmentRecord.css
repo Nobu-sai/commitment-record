@@ -1,0 +1,144 @@
+
+.public_commitment_container {
+  padding: 20px;
+  height: 100%;
+
+}
+.record {
+  padding: 20px;
+  width: 60%;
+  
+  display: flex;
+  flex-direction: column;
+}
+
+.collection-select,
+.collection-input,
+.collection-button {
+  margin-top: 10px;
+  width: 300px;
+}
+
+
+
+
+
+
+/* Old */
+#container {
+  padding-top: 250px; 
+  padding-bottom: 100px; 
+  background-color: hsla(0, 0%, 40%, .6); 
+  background-color: transparent;
+}
+
+#calendar {
+  margin: 0; 
+  padding: 0; 
+  width: 95%;
+  height: 65px;
+  overflow: hidden;
+  background-color: hsla(90, 30%, 25%, 0.6);
+  font-size: 20px; 
+  color: #fff; 
+}
+
+
+#calendar:hover {
+  margin: 0 auto;
+  transition: margin 1s ease-in; 
+  padding: 30px;
+  padding-bottom: 50px;
+  border: 20px outset hsla(0, 5%, 20%, 1);
+  transition: border 1s ease-in; 
+  border-radius: 5px; 
+  min-width: 900px; 
+  height: 300px; 
+  transition: height 1s ease-in; 
+  overflow: auto; 
+  font-size: 40px;
+}
+
+#calendar p {
+  margin: 10px 0; 
+  margin-left: 10px
+}
+
+#calendar p:first-letter {
+  color: hsl(40, 100%, 55%);
+  font-size: 100px; 
+  font-size: 2em; 
+}
+
+#calendar table {
+  margin: 0 auto; 
+  width: 90%; 
+  height: 100%; 
+  font-size: 14px; 
+}
+
+#calendar table,
+#calendar table caption,
+#calendar th,
+#calendar td {
+  border: solid 2px hsla(0, 5%, 20%, 1);
+  border-radius: 5px; 
+  background-color: hsla(0, 0%, 0%, 0.4);
+}
+
+#calendar thead th,
+#calendar tbody td {
+  width: 10%; 
+  width: 50px; 
+  width: 5%; 
+
+}
+
+#calendar thead th {
+  padding: 10px; 
+  font-size: 30px; 
+}
+
+#calendar thead th.sunday:nth-of-type(1),
+#calendar tbody td.sunday:nth-of-type(1) {
+  background-color: hsla(0, 100%, 70%, 0.6);
+}
+
+#calendar thead th.sunday:nth-of-type(1):hover,
+#calendar tbody td.sunday:nth-of-type(1):hover {
+  background-color: hsla(0, 100%, 70%, 1);
+}
+
+#calendar tbody td {
+  padding: 30px 10px; 
+  padding: 10px; 
+  text-align: center; 
+}
+
+#calendar tbody td:hover {
+  background-color: hsla(0, 0%, 100%, 1);
+  background-color: hsla(0, 0%, 0%, 1);
+}
+
+#weekly-row p {
+  font-size: 30px; 
+}
+
+#weekly-row p:first-letter {
+  font-size: 30px;
+  color: #fff; 
+}
+
+#weekly-row p span {
+  color: red; 
+}
+
+
+#daily-row p {
+  color: red; 
+}
+
+
+
+
+
