@@ -276,19 +276,19 @@ export default class CommitmentRecord extends Component {
             onChange={(e)=>this.getDateInput(e.target.value)}
           ></input> */}
 
-          <label htmlFor="time">The DW Time</label>
+          <label htmlFor="time">Deep Work Time</label>
           <input 
             id="time"
             className="time_input"
-            placeholder="Type Time of Deep Work Hours (Natural Number)"
+            placeholder="Type Deep Work Hours (Natural Number)"
             value={this.state.dwTime}
             onChange={(e)=>this.getDWTime(e.target.value)}
           ></input>
-          <label htmlFor="progress">The Date</label>
+          <label htmlFor="progress"> Daily Progress</label>
           <textarea
             id="progress"
             className="progress_input"
-            placeholder="Type daily progress."
+            placeholder="Type Daily Progress."
             value={this.state.dailyProgress}
             onChange={(e)=>this.getDailyProgress(e.target.value)}
           >
@@ -301,7 +301,7 @@ export default class CommitmentRecord extends Component {
             Add
           </button>
 
-          <div>Deep Work Time in this week: {this.state.weeklyDWTotal}</div>
+          <div>Weekly Deep Work Time: {this.state.weeklyDWTotal}</div>
 
           {/* <button
             className="delete-button"
