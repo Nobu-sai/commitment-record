@@ -85,7 +85,7 @@ export default class CommitmentRecord extends Component {
 
     // FECTH the Document MATCHING to the weekly dates.
     formatedDates.map((date)=>{
-       db.collection('public-commitment').doc(date).get()
+       db.collection('commitment-record').doc(date).get()
        .then((res)=>{
         // console.log(res.data()['DW Time']);
         // Calculate the total of all the FETCHED dates. (weeklyDWTotalVariable)
@@ -94,7 +94,7 @@ export default class CommitmentRecord extends Component {
        })
        
        .catch((error)=> {
-        //  console.log(error)
+         console.log(error)
        })
 
     })
@@ -154,7 +154,7 @@ export default class CommitmentRecord extends Component {
     let dateString = date.toString()
     let dwTimeInNumber = parseInt(this.state.dwTime)
           
-    db.collection('public-commitment').doc(dateString).set({
+    db.collection('commitment-record').doc(dateString).set({
       "Date": this.state.selectedDate,
       "DW Time": dwTimeInNumber,
       "Daily Progress": this.state.dailyProgress,
