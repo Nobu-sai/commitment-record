@@ -15,7 +15,7 @@ export default class CommitmentRecord extends Component {
       year: null,
       month: null,
       day: null, 
-      selectedDate: this.setToday(), 
+      selectedDate: this.formatDate(new Date()), 
       dwTime: "",
       dailyProgress: "",
       weeklyDWTotal: 0,
@@ -28,28 +28,16 @@ export default class CommitmentRecord extends Component {
   }  
 
   componentDidMount() {
-    // console.log("this.state.selectedDate from componentDidMount(): ", this.state.selectedDate)
-    this.setToday()
     this.calculateCurrentWeeklyTotalTime()
   }
 
-  componentDidUpdate() {
-    // console.log("this.state.selectedDate from componentDidUpdate(): ", this.state.selectedDate)
-    // console.log("this.state.weeklyDWTotal from componentDidUpdate(): ", this.state.weeklyDWTotal)
-  }
 
   // *** For MANIPULATING Date and Time ***
 
-  setToday() {
-        
-    var today = new Date();
-    var formatedToday = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-  
-    return formatedToday;
-
-  }
-    
   formatDate (date) {	// formats a JS date to 'yyyy-mm-dd'
+  // data Param 
+  // = When the Component did Mount, it is Passed from this.ccalculateCurrentWeeklyTotalTime()
+  // = When the date input changed, Passed from <DropdownDate>/onDateChange Event Handler Property 
     var d = new Date(date),   
       month = '' + (d.getMonth() + 1),
       day = '' + d.getDate(),
@@ -65,41 +53,39 @@ export default class CommitmentRecord extends Component {
      let dates = [];
      let formatedDates = [];
 
-    // Get the DATES in the CURRENT Week.
-    var startOfWeek = moment().startOf('isoWeek');
-    var endOfWeek = moment().endOf('isoWeek');    
-    var day = startOfWeek;
-    
-    while (day <= endOfWeek) {
-        // console.log(day)
-        dates.push(day.toDate());
-        day = day.clone().add(1, 'd');
-    }
-    
-    // console.log(dates);
+      // Get the DATES in the CURRENT Week.
+      var startOfWeek = moment().startOf('isoWeek');
+      var endOfWeek = moment().endOf('isoWeek');    
+      var day = startOfWeek;
+      
+      while (day <= endOfWeek) {
+          // console.log(day)
+          dates.push(day.toDate());
+          day = day.clone().add(1, 'd');
+      }
+      
 
-    // Convert each date into the  the SAME format as the date saved in the Firestore (YYYY-MM-DD). 
-    dates.map((date)=> {
-      formatedDates.push(this.formatDate(date))
-    })
+      // Convert each date into the  the SAME format as the date saved in the Firestore (YYYY-MM-DD). 
+      dates.map((date)=> {
+        formatedDates.push(this.formatDate(date))
+      })
 
-    // console.log(formatedDates)
 
-    // FECTH the Document MATCHING to the weekly dates.
-    formatedDates.map((date)=>{
-       db.collection('commitment-record').doc(date).get()
-       .then((res)=>{
-        // console.log(res.data()['DW Time']);
-        // Calculate the total of all the FETCHED dates. (weeklyDWTotalVariable)
-        this.updateWeeklyDWTotal(res.data()['DW Time'])
+      // FECTH the Document MATCHING to the weekly dates.
+      formatedDates.map((date)=>{
+        db.collection('commitment-record').doc(date).get()
+        .then((res)=>{
+          // console.log(res.data()['DW Time']);
+          // Calculate the total of all the FETCHED dates. (weeklyDWTotalVariable)
+          this.updateWeeklyDWTotal(res.data()['DW Time'])
+          
+        })
         
-       })
-       
-       .catch((error)=> {
-         console.log(error)
-       })
+        .catch((error)=> {
+          console.log(error)
+        })
 
-    })
+      })
 
    }
 
@@ -115,29 +101,6 @@ export default class CommitmentRecord extends Component {
   }
 
   // *** For RECORDING Commit ***
-
-  getYearSelection(yearSelection) {
-    // console.log(yearSelection)
-    this.setState({
-      date: yearSelection
-    })
-  }
-
-    
-  getMonthSelection(monthSelection) {
-    // console.log(monthSelection)
-    this.setState({
-      date: monthSelection
-    })
-  }
-
-  getDateSelection(dateSelection) {
-    // console.log(dateSelection)
-    this.setState({
-      date: dateSelection
-    })
-  }
-
   getDWTime(timeInput) {
     this.setState({
       dwTime: timeInput
@@ -155,7 +118,7 @@ export default class CommitmentRecord extends Component {
     let date = this.state.selectedDate;
     let dateString = date.toString()
     let dwTimeInNumber = parseInt(this.state.dwTime)
-          
+    
     db.collection('commitment-record').doc(dateString).set({
       "Date": this.state.selectedDate,
       "DW Time": dwTimeInNumber,
@@ -163,9 +126,8 @@ export default class CommitmentRecord extends Component {
     })
 
     this.setState({
-      date: "",
-      time: "",
-      progress: "",
+      dwTime: "",
+      dailyProgress: "",
     })
     
 
@@ -203,18 +165,15 @@ export default class CommitmentRecord extends Component {
                 DropdownComponent.month,
                 DropdownComponent.day,
               ]}
-              onYearChange={(year) => {         // optional
-                // console.log(year);
-                this.getYearSelection(year)
-              }}
-              onMonthChange={(month) => {       // optional
-                // console.log(month);
-                this.getMonthSelection(month)
-              }}
-              onDayChange={(day) => {           // optional
-                // console.log(day);
-                this.getDateSelection(day)
-              }}
+              // onYearChange={(year) => {         // optional
+              //   // console.log(year);
+              // }}
+              // onMonthChange={(month) => {       // optional
+              //   // console.log(month);
+              // }}
+              // onDayChange={(day) => {           // optional
+              //   // console.log(day);
+              // }}
               onDateChange={(date) => {         // optional
                 // console.log(date);
                 this.setState(
