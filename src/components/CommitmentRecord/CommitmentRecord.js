@@ -38,9 +38,9 @@ export default class CommitmentRecord extends Component {
   // data Param 
   // = When the Component did Mount, it is Passed from this.ccalculateCurrentWeeklyTotalTime()
   // = When the date input changed, Passed from <DropdownDate>/onDateChange Event Handler Property 
-    var d = new Date(date)   
+    var d = new Date(date),   
       month = '' + (d.getMonth() + 1),
-      day = '' + d.getDate(),
+      day = '' + d.getDate();
       year = '' + d.getFullYear();
       console.log(month)
       // -> 1
