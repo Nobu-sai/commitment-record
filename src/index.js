@@ -1,12 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import CommitmentRecord from './CommitmentRecord.js';
+// import CommitmentRecord from './CommitmentRecord.js';
+import Home from './Home.js'
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <CommitmentRecord />
+    <Home />
   </React.StrictMode>,
   document.getElementById('root')
 );

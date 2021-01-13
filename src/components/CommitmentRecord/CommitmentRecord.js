@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import * as moment from 'moment'
-import { db } from './firebase.js';
+
+import { db } from '../../firebase.js';
+
 import { DropdownDate, DropdownComponent } from 'react-dropdown-date';
 
 import './CommitmentRecord.css';
