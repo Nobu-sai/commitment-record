@@ -77,13 +77,13 @@ export default class Home extends Component {
             onChange={(e)=> this.setState({
               email: e.target.value
             })} 
-            placeholder="Enter your email"
+            placeholder="Enter signed-up email"
             ></input>
             <input 
             onChange={(e)=> this.setState({
               pwd: e.target.value
             })} 
-            placeholder="Enter your PWD"
+            placeholder="Enter signed-up PWD"
             ></input>
           <button onClick={()=> this.activateSignInWithEmailAndPWD()}>Sign in</button>
           </div>  
