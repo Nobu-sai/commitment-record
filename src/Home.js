@@ -95,13 +95,6 @@ export default class Home extends Component {
           </div>
         
         }
-        {/* {
-          this.state.signedIn == "Signed-in" &&
-          <div>
-            <CommitmentRecord />
-            <button onClick={()=> this.activateSignOut()}>Sign out</button>
-          </div>
-        }  */}
       </div>
     )
   }
