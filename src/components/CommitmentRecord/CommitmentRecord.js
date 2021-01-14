@@ -40,7 +40,7 @@ export default class CommitmentRecord extends Component {
   // = When the date input changed, Passed from <DropdownDate>/onDateChange Event Handler Property 
     var d = new Date(date),   
       month = '' + (d.getMonth() + 1),
-      day = '' + d.getDate();
+      day = '' + d.getDate(),
       year = '' + d.getFullYear();
       console.log(month)
       // -> 1
