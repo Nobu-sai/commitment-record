@@ -42,11 +42,17 @@ export default class CommitmentRecord extends Component {
       month = '' + (d.getMonth() + 1),
       day = '' + d.getDate(),
       year = '' + d.getFullYear();
-
+      console.log(month)
+      // -> 1
+      console.log(typeof(month))
+      // -> string
+      
     if (month.length < 2) month = '0' + month;
     if (day.length < 2) day = '0' + day;
 
     return [year, month, day].join('-');
+    // This is String Data Type
+    // => CAN be used directly as the Firebase/Firestore/Document names
   }
 
    calculateCurrentWeeklyTotalTime () {     
@@ -65,7 +71,7 @@ export default class CommitmentRecord extends Component {
       }
       
 
-      // Convert each date into the  the SAME format as the date saved in the Firestore (YYYY-MM-DD). 
+      // Convert each date into the SAME format as the date saved in the Firestore (YYYY-MM-DD). 
       dates.map((date)=> {
         formatedDates.push(this.formatDate(date))
       })
@@ -116,10 +122,9 @@ export default class CommitmentRecord extends Component {
 
   addDailyCommitment() {       
     let date = this.state.selectedDate;
-    let dateString = date.toString()
     let dwTimeInNumber = parseInt(this.state.dwTime)
     
-    db.collection('commitment-record').doc(dateString).set({
+    db.collection('commitment-record').doc(date).set({
       "Date": this.state.selectedDate,
       "DW Time": dwTimeInNumber,
       "Daily Progress": this.state.dailyProgress,
