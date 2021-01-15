@@ -189,7 +189,7 @@ export default class CommitmentRecord extends Component {
     db.collection('commitment-record').doc(date).set({
       "Date": this.state.selectedDate,
       "DW Hour": this.state.DWHourInput,
-      "DW Minute": this.state.DWHourInput,
+      "DW Minute": this.state.DWMinuteInput,
       "Daily Progress": dailyProgress,
     })
     .then((response)=> {
