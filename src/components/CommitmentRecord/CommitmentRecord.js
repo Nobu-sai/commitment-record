@@ -7,6 +7,9 @@ import { DropdownDate, DropdownComponent } from 'react-dropdown-date';
 
 import './CommitmentRecord.css';
 
+// Key Logic 
+// : Record each of Hour and Minute INDIVIDUALL.
+// : Convert into HH:MM format when DISPLAYING the time (NOT when recording the time).
 
 export default class CommitmentRecord extends Component {
   constructor(props) {
@@ -15,10 +18,11 @@ export default class CommitmentRecord extends Component {
       year: null,
       month: null,
       day: null, 
-      selectedDate: this.formatDate(new Date()), 
-      dwTime: "",
-      dailyProgress: "",
-      weeklyDWTotal: 0,
+      selectedDate: this.formatDate(new Date()),       
+      DWHourInput: "",
+      DWMinuteInput: "",
+      dailyProgressInput: "",
+      weeklyDWTimeTotal: "",      
     }
     this.props = {
     }
@@ -28,8 +32,9 @@ export default class CommitmentRecord extends Component {
   }  
 
   componentDidMount() {
-    this.calculateCurrentWeeklyTotalTime()
+    this.calculateWeeklyDWHoursAndMinutesTotal()
   }
+
 
 
   // *** For MANIPULATING Date and Time ***
@@ -42,9 +47,9 @@ export default class CommitmentRecord extends Component {
       month = '' + (d.getMonth() + 1),
       day = '' + d.getDate(),
       year = '' + d.getFullYear();
-      console.log(month)
+      // console.log(month)
       // -> 1
-      console.log(typeof(month))
+      // console.log(typeof(month))
       // -> string
       
     if (month.length < 2) month = '0' + month;
@@ -55,86 +60,137 @@ export default class CommitmentRecord extends Component {
     // => CAN be used directly as the Firebase/Firestore/Document names
   }
 
-   calculateCurrentWeeklyTotalTime () {     
-     let dates = [];
-     let formatedDates = [];
+  // *** Weekly DW Time ***
+  calculateWeeklyDWHoursAndMinutesTotal() {  
+    let weeklyDWHourTotal = 0;
+    let weeklyDWMinutesTotal = 0;
+    
+    let weekDays = this.calculateTheCurrentWeek()
 
-      // Get the DATES in the CURRENT Week.
-      var startOfWeek = moment().startOf('isoWeek');
-      var endOfWeek = moment().endOf('isoWeek');    
-      var day = startOfWeek;
-      
-      while (day <= endOfWeek) {
-          // console.log(day)
-          dates.push(day.toDate());
-          day = day.clone().add(1, 'd');
-      }
-      
+    // FECTH the Document MATCHING to the weekly dates.
+    weekDays.map((weekDay)=>{
+      db.collection('commitment-record').doc(weekDay).get()
+      .then((res)=>{
+        console.log(res.data()['Date'])
+        console.log(res.data()['DW Hour'])
+        weeklyDWHourTotal += parseInt(res.data()['DW Hour']) 
+        // console.log("calculateWeeklyDWHoursAndMinutesTotal()/weeklyDWHourTotal", weeklyDWHourTotal) 
 
-      // Convert each date into the SAME format as the date saved in the Firestore (YYYY-MM-DD). 
-      dates.map((date)=> {
-        formatedDates.push(this.formatDate(date))
+        weeklyDWMinutesTotal += parseInt(res.data()['DW Minute'])  
+        // console.log("calculateWeeklyDWHoursAndMinutesTotal()/weeklyDWMinutesTotal", weeklyDWMinutesTotal)
+
+        // console.log("weeklyDWHourTotal: ", weeklyDWHourTotal)
+        let weeklyDWHourTotalInMinutes = this.convertDWHoursIntoMinutes(weeklyDWHourTotal)
+        this.calculateWeeklyDWTimeTotal(weeklyDWHourTotalInMinutes, weeklyDWMinutesTotal)
+
+      })  
+      .catch((error)=> {
+        console.log(error)
       })
 
+    })
 
-      // FECTH the Document MATCHING to the weekly dates.
-      formatedDates.map((date)=>{
-        db.collection('commitment-record').doc(date).get()
-        .then((res)=>{
-          // console.log(res.data()['DW Time']);
-          // Calculate the total of all the FETCHED dates. (weeklyDWTotalVariable)
-          this.updateWeeklyDWTotal(res.data()['DW Time'])
-          
-        })
-        
-        .catch((error)=> {
-          console.log(error)
-        })
+  }  
 
-      })
+    
+  calculateTheCurrentWeek() { 
+    let dates = [];
+    let formatedDates = [];
 
-   }
+    // Get the DATES in the CURRENT Week.
+    var startOfWeek = moment().startOf('isoWeek');
+    var endOfWeek = moment().endOf('isoWeek');    
+    var day = startOfWeek;
+    
+    while (day <= endOfWeek) {
+        // console.log(day)
+        dates.push(day.toDate());
+        day = day.clone().add(1, 'd');
+    }
+    
 
+    // Convert each date into the SAME format as the date saved in the Firestore (YYYY-MM-DD). 
+    dates.map((date)=> {
+      formatedDates.push(this.formatDate(date))
+    })
 
-  // Update the State for the Weekly Total (weeklyDWTotal State).
-  updateWeeklyDWTotal(dailyDWTotal) {
-    // console.log(dailyDWTotal)
+    return formatedDates;
+  }
 
-    this.setState((state, props)=> {
-      return {weeklyDWTotal: state.weeklyDWTotal + dailyDWTotal}
+  convertDWHoursIntoMinutes(weeklyDWHourTotal) {
+  //  console.log("convertDWHoursIntoMinutes()/weeklyDWHourTotal: ", weeklyDWHourTotal)
+    let weeklyDWHourTotalInMinutes = weeklyDWHourTotal * 60;
+  //  console.log("convertDWHoursIntoMinutes()/weeklyDWHourTotalInMinutes", weeklyDWHourTotalInMinutes)
+
+  return weeklyDWHourTotalInMinutes;
+  }
+
+  calculateWeeklyDWTimeTotal(weeklyDWHourTotalInMinutes, weeklyDWMinutesTotal) {
+    
+    // console.log("...A Day")
+    // console.log("calculateWeeklyDWTimeTotal()/weeklyDWHoursTotalInMinutes: ", weeklyDWHourTotalInMinutes)
+    // console.log("calculateWeeklyDWTimeTotal()/weeklyDWMinutesTotal: ", weeklyDWMinutesTotal)
+    let weeklyDWTimeTotalInMinutes = weeklyDWHourTotalInMinutes + weeklyDWMinutesTotal;
+    // let weeklyDWTimeTotalInMinutes = 71; 
+      // Output: 1:11
+    // let weeklyDWTimeTotalInMinutes = 1441; 
+      // Output: 24:01
+    // console.log("calculateWeeklyDWTimeTotal()/weeklyDWTimeTotalInMinutes: ", weeklyDWTimeTotalInMinutes)
+    
+
+    // Goal = Minutes (weeklyDWTimeTotalInMinutes) into HH:MM format.
+    // Src: https://www.w3resource.com/javascript-exercises/javascript-basic-exercise-51.php
+    let weeklyDWTimeTotalOfHours = Math.floor(weeklyDWTimeTotalInMinutes / 60)
+    // console.log("calculateWeeklyDWTimeTotal()/weeklyDWTimeTotalOfHours (= weeklyDWTimeTotalInMinutes / 60): ", weeklyDWTimeTotalOfHours, "Hours") 
+
+      // Goal = Get the Decimals as Minute Remainder from Division for hours (weeklyDWTImeTotalOfHours).
+      // Src: https://stackoverflow.com/a/4512328/13710739
+      let weeklyDWTimeTotalOfHoursWithDecimal = weeklyDWTimeTotalInMinutes / 60; 
+      let weeklyDWDecimal = weeklyDWTimeTotalOfHoursWithDecimal - weeklyDWTimeTotalOfHours;
+      // console.log("weeklyDWDecimal: ", weeklyDWDecimal)
+    
+    // Goal = Decimals into Minutes.  
+    let weeklyDWTimeTotalOfMinutes = "" + Math.round(weeklyDWDecimal * 60);
+      // Allows concatenating 0 before the minute of a SINGLE number. 
+    if(weeklyDWTimeTotalOfMinutes.length < 2) {
+      weeklyDWTimeTotalOfMinutes = "0" + weeklyDWTimeTotalOfMinutes
+      // console.log(weeklyDWTimeTotalOfMinutes)
+    }  
+    
+    // console.log("calculateWeeklyDWTimeTotal()/weeklyDWTimeTotalOfMinutes: ", weeklyDWTimeTotalOfMinutes, "Minutes") 
+
+    // Goal = Concatenate Hours and Minutes into HH:MM format. 
+    let weeklyDWTimeTotal = `${weeklyDWTimeTotalOfHours}:${weeklyDWTimeTotalOfMinutes} (= ${weeklyDWTimeTotalInMinutes} Minutes)`;
+    // console.log("calculateWeeklyDWTimeTotal()/weeklyDWTimeTotal: ", weeklyDWTimeTotal)
+    // console.log("Date Type of weeklyDWTimeTotal: ", typeof weeklyDWTimeTotal)
+
+    // Goal = Update State with the result Weekly DW Time Total in HH:MM to 
+    this.setState({
+      weeklyDWTimeTotal: weeklyDWTimeTotal
     })
     
   }
+    
 
   // *** For RECORDING Commit ***
-  getDWTime(timeInput) {
-    this.setState({
-      dwTime: timeInput
-    })
+  getDailyProgress() {
+    let dailyProgress = `${this.state.dailyProgress}`;
+    console.log("getDailyProgress()/dailyProgress", dailyProgress)
+
+    return dailyProgress;
   }
 
-    
-  getDailyProgress(progressInput) {
-    this.setState({
-      dailyProgress: progressInput
-    })
-  }
-
-  addDailyCommitment() {       
+  addDailyCommitment() {    
+    // let DWTime = this.getDWTime()
+    let dailyProgress = this.getDailyProgress()
     let date = this.state.selectedDate;
-    let dwTimeInNumber = parseInt(this.state.dwTime)
     
     db.collection('commitment-record').doc(date).set({
       "Date": this.state.selectedDate,
-      "DW Time": dwTimeInNumber,
-      "Daily Progress": this.state.dailyProgress,
+      "DW Hour": this.state.DWHourInput,
+      "DW Minute": this.state.DWHourInput,
+      "Daily Progress": dailyProgress,
     })
-
-    this.setState({
-      dwTime: "",
-      dailyProgress: "",
-    })
-    
 
   }
 
@@ -151,7 +207,7 @@ export default class CommitmentRecord extends Component {
   
   render() {
     return (
-      <div className="public_commitment_container">
+      <div>
         <div className="record">
           <div className="datepicker_container">
 
@@ -242,21 +298,34 @@ export default class CommitmentRecord extends Component {
             onChange={(e)=>this.getDateInput(e.target.value)}
           ></input> */}
 
-          <label htmlFor="time">Deep Work Time</label>
-          <input 
-            id="time"
-            className="time_input"
-            placeholder="Type Deep Work Hours (Natural Number)"
-            value={this.state.dwTime}
-            onChange={(e)=>this.getDWTime(e.target.value)}
-          ></input>
-          <label htmlFor="progress"> Daily Progress</label>
+            <label htmlFor="time">Deep Work Time</label>
+          <div className="DWTime_input">
+            <input 
+              id="DWHour"
+              className="DWhour_input"
+              placeholder="Hour"
+              onChange={(e)=> this.setState({
+                DWHourInput: e.target.value,
+              })}
+            ></input>
+            <div className="time_collon"> : </div>
+            <input 
+              id="DWMinute"
+              className="DWminute_input"
+              placeholder="Minute"
+              onChange={(e)=> this.setState({
+                DWMinuteInput: e.target.value,
+              })}
+            ></input>
+          </div>
+          <label htmlFor="progress">Daily Progress</label>
           <textarea
             id="progress"
             className="progress_input"
-            placeholder="Type Daily Progress."
-            value={this.state.dailyProgress}
-            onChange={(e)=>this.getDailyProgress(e.target.value)}
+            placeholder=": DAILY-PROGRESS-1"
+            onChange={(e)=> this.setState({
+              dailyProgressInput: e.target.value
+            })}
           >
           </textarea>
 
@@ -267,7 +336,7 @@ export default class CommitmentRecord extends Component {
             Add
           </button>
 
-          <div>Weekly Deep Work Time: {this.state.weeklyDWTotal}</div>
+          <div>Weekly Deep Work Time: {this.state.weeklyDWTimeTotal}</div>
 
           {/* <button
             className="delete-button"
