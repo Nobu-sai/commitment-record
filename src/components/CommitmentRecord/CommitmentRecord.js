@@ -373,6 +373,7 @@ export default class CommitmentRecord extends Component {
           <div className="result">
             {this.state.recordResult}
           </div>
+          <a href="https://console.firebase.google.com/project/commitment-record/firestore/data~2Fcommitment-record~2F2021-01-10">Firestore</a>
 
         </div>    
 
