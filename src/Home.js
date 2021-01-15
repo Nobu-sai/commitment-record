@@ -58,7 +58,7 @@ export default class Home extends Component {
       this.setState({
         singedInUser: user,
       })
-        console.log(user)
+        // console.log(user)
       } else {
       this.setState({
         singedInUser: false,

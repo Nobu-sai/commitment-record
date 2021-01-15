@@ -23,6 +23,7 @@ export default class CommitmentRecord extends Component {
       DWMinuteInput: "",
       dailyProgressInput: "",
       weeklyDWTimeTotal: "",      
+      recordResult: "",
     }
     this.props = {
     }
@@ -40,9 +41,9 @@ export default class CommitmentRecord extends Component {
   // *** For MANIPULATING Date and Time ***
 
   formatDate (date) {	// formats a JS date to 'yyyy-mm-dd'
-  // data Param 
-  // = When the Component did Mount, it is Passed from this.ccalculateCurrentWeeklyTotalTime()
-  // = When the date input changed, Passed from <DropdownDate>/onDateChange Event Handler Property 
+  // date Param 
+    // = When the Component did Mount, it is Passed from this.ccalculateCurrentWeeklyTotalTime()
+    // = When the date input changed, Passed from <DropdownDate>/onDateChange Event Handler Property 
     var d = new Date(date),   
       month = '' + (d.getMonth() + 1),
       day = '' + d.getDate(),
@@ -71,8 +72,8 @@ export default class CommitmentRecord extends Component {
     weekDays.map((weekDay)=>{
       db.collection('commitment-record').doc(weekDay).get()
       .then((res)=>{
-        console.log(res.data()['Date'])
-        console.log(res.data()['DW Hour'])
+        // console.log(res.data()['Date'])
+        // console.log(res.data()['DW Hour'])
         weeklyDWHourTotal += parseInt(res.data()['DW Hour']) 
         // console.log("calculateWeeklyDWHoursAndMinutesTotal()/weeklyDWHourTotal", weeklyDWHourTotal) 
 
@@ -191,6 +192,30 @@ export default class CommitmentRecord extends Component {
       "DW Minute": this.state.DWHourInput,
       "Daily Progress": dailyProgress,
     })
+    .then((response)=> {
+      this.setState({
+        recordResult: 
+        `
+        Added the following...
+        Daily DW Time = ${this.state.DWHourInput}:${this.state.DWMinuteInput}, 
+        Daily Progress = ${this.state.dailyProgressInput}
+        ...
+        That's it!
+        `
+      })
+    })
+    .catch((error)=>{
+      this.setState({
+        recordResult: 
+        `
+        Recording failed...
+        An erorr happened: ${error}
+        ...
+        Oh...
+        `
+        
+      })
+    })
 
   }
 
@@ -208,6 +233,7 @@ export default class CommitmentRecord extends Component {
   render() {
     return (
       <div>
+        <div>Weekly Deep Work Time: {this.state.weeklyDWTimeTotal}</div>
         <div className="record">
           <div className="datepicker_container">
 
@@ -336,7 +362,6 @@ export default class CommitmentRecord extends Component {
             Add
           </button>
 
-          <div>Weekly Deep Work Time: {this.state.weeklyDWTimeTotal}</div>
 
           {/* <button
             className="delete-button"
@@ -345,6 +370,9 @@ export default class CommitmentRecord extends Component {
             Delete
           </button> */}
 
+          <div className="result">
+            {this.state.recordResult}
+          </div>
 
         </div>    
 
